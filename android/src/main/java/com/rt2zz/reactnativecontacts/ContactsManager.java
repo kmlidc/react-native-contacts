@@ -10,6 +10,8 @@ import android.provider.ContactsContract.CommonDataKinds;
 import android.provider.ContactsContract.CommonDataKinds.Organization;
 import android.provider.ContactsContract.CommonDataKinds.StructuredName;
 import android.provider.ContactsContract.RawContacts;
+import android.database.Cursor;
+import android.net.Uri;
 
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -44,6 +46,22 @@ public class ContactsManager extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getAllWithoutPhotos(final Callback callback) {
         getAllContacts(callback);
+    }
+
+    @ReactMethod
+    public void deleteContact(final String contactId,final Callback callback) {
+      AsyncTask.execute(new Runnable() {
+          @Override
+          public void run() {
+              Context context = getReactApplicationContext();
+              ContentResolver cr = context.getContentResolver();
+
+              ContactsProvider contactsProvider = new ContactsProvider(cr);
+              String contacts = contactsProvider.delContacts(contactId);
+
+              callback.invoke(null, contacts);
+          }
+      });
     }
 
     /**

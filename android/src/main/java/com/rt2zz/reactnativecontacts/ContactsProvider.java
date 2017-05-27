@@ -228,6 +228,28 @@ public class ContactsProvider {
         return map;
     }
 
+    public String delContacts(String contactId) {
+      Cursor cur = contentResolver.query(
+            ContactsContract.Data.CONTENT_URI,
+            null,
+            ContactsContract.RawContacts.CONTACT_ID + " = ?",
+            new String[]{contactId},
+            null
+        );
+      while (cur.moveToNext()) {
+          try{
+              String lookupKey = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
+              Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey);
+              contentResolver.delete(uri, null, null);
+          }
+          catch(Exception e)
+          {
+              System.out.println(e.getStackTrace());
+          }
+      }
+      return null;
+    }
+
     public String getPhotoUriFromContactId(String contactId) {
         Cursor cursor = contentResolver.query(
                 ContactsContract.Data.CONTENT_URI,
